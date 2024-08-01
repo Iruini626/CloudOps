@@ -30,8 +30,7 @@ class CloudopsInventoryStack(Stack):
                                                 security_group=sg,
                                                 block_devices=[ec2.BlockDevice(
                                                         device_name="/dev/xvda",
-                                                        volume=ec2.BlockDeviceVolume.ebs(50,encrypted=True),
-                                                        volume_type=ec2.EbsDeviceVolumeType.GP3)
+                                                        volume=ec2.BlockDeviceVolume.ebs(50,encrypted=True, volume_type=ec2.EbsDeviceVolumeType.GP3))
                                                     ],
                                                 instance_type=ec2.InstanceType("t3.small"))
         
@@ -42,8 +41,7 @@ class CloudopsInventoryStack(Stack):
                                                   security_group=sg,
                                                   block_devices=[ec2.BlockDevice(
                                                           device_name="/dev/xvda",
-                                                          volume=ec2.BlockDeviceVolume.ebs(50, encrypted=False),
-                                                          volume_type=ec2.EbsDeviceVolumeType.GP3)
+                                                          volume=ec2.BlockDeviceVolume.ebs(50, encrypted=False, volume_type=ec2.EbsDeviceVolumeType.GP3))
                                                       ],
                                                   instance_type=ec2.InstanceType("t3.small"))
         
