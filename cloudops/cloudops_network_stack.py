@@ -12,7 +12,7 @@ class CloudopsNetworkStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # VPC
-        vpc = ec2.Vpc(self, "CloudOpsNetwork",
+        self.vpc = ec2.Vpc(self, "CloudOpsNetwork",
             max_azs = 2,
             nat_gateways = 1,
             subnet_configuration = [
