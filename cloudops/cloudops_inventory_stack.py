@@ -24,7 +24,7 @@ class CloudopsInventoryStack(Stack):
                                description="Default Security Group for Inventory Instances")
         
         # Launch Template with Encrypted Volume
-        encrypted_template = ec2.LaunchTemplate(self, "Encrupted Servers",
+        encrypted_template = ec2.LaunchTemplate(self, "Encrypted Servers",
                                                 machine_image=ec2.AmazonLinux2023ImageSsmParameter(),
                                                 role=role,
                                                 security_group=sg,

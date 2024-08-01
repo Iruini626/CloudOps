@@ -19,4 +19,7 @@ cdk.Tags.of(app).add('deployment_version','1.3')
 cdk.Tags.of(network_stack).add('resource_group','network_layer')
 cdk.Tags.of(inventory_stack).add('resource_group', 'inventory_layer')
 cdk.Tags.of(peering_stack).add('resource_group', 'peering_layer')
+
+# Comment out the folllowing line to disable registration of myApplications
+cdk.Tags.of(app).add("awsApplication", "arn:aws:resource-groups:ap-southeast-1:024444663664:group/cloudops/05cyy2riymuymc7ei8iqk94dt9")
 app.synth()
