@@ -28,4 +28,4 @@ class CloudopsNetworkStack(Stack):
             vpc_name="CloudOpsNetworkStack/BaseNetwork"
         )
 
-        CfnOutput(self, "vpc_id", value=self.vpc_id)
+        CfnOutput(self, "vpc_id", value=self.vpc.vpc_id)
