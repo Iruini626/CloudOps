@@ -8,7 +8,7 @@ from cloudops.cloudops_inventory_stack import CloudopsInventoryStack
 from cloudops.cloudops_peering_stack import CloudopsPeeringStack
 
 app = cdk.App()
-network_stack = CloudopsNetworkStack(app, "CloudOpsStack", env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
+network_stack = CloudopsNetworkStack(app, "CloudOpsNetworkStack", env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 inventory_stack = CloudopsInventoryStack(app, "CloudOpsInventoryStack", vpc=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 peering_stack = CloudopsPeeringStack(app, "CloudOpsPeeringStack", vpc_main=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 
