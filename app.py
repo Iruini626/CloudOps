@@ -3,26 +3,20 @@ import os
 
 import aws_cdk as cdk
 
-from cloud_ops.cloud_ops_stack import CloudOpsStack
-
+from cloudops.cloudops_network_stack import CloudopsNetworkStack
+from cloudops.cloudops_inventory_stack import CloudOpsInventoryStack
+from cloudops.cloudops_peering_stack import CloudOpsPeeringStack
 
 app = cdk.App()
-CloudOpsStack(app, "CloudOpsStack",
-    # If you don't specify 'env', this stack will be environment-agnostic.
-    # Account/Region-dependent features and context lookups will not work,
-    # but a single synthesized template can be deployed anywhere.
+network_stack = CloudopsNetworkStack(app, "CloudOpsStack", env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
+inventory_stack = CloudOpsInventoryStack(app, "CloudOpsInventoryStack", vpc=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
+peering_stack = CloudOpsPeeringStack(app, "CloudOpsPeeringStack", vpc=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 
-    # Uncomment the next line to specialize this stack for the AWS Account
-    # and Region that are implied by the current CLI configuration.
-
-    #env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')),
-
-    # Uncomment the next line if you know exactly what Account and Region you
-    # want to deploy the stack to. */
-
-    #env=cdk.Environment(account='123456789012', region='us-east-1'),
-
-    # For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html
-    )
-
+cdk.Tags.of(app).add('environment','prod')
+cdk.Tags.of(app).add('application','cloudops')
+cdk.Tags.of(app).add('owner', 'arielyip')
+cdk.Tags.of(app).add('deployment_version','1.3')
+cdk.Tags.of(network_stack).add('resource_group','network_layer')
+cdk.Tags.of(inventory_stack).add('resource_group', 'inventory_layer')
+cdk.Tags.of(peering_stack).add('resource_group', 'peering_layer')
 app.synth()

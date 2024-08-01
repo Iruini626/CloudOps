@@ -1,7 +1,7 @@
 import aws_cdk as core
 import aws_cdk.assertions as assertions
 
-from cloud_ops.cloud_ops_stack import CloudOpsStack
+from cloudops.cloudops_network_stack import CloudOpsStack
 
 # example tests. To run these tests, uncomment this file along with the example
 # resource in cloud_ops/cloud_ops_stack.py
