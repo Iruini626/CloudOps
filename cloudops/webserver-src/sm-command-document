@@ -1,0 +1,5 @@
+sudo yum install nginx -y
+sudo yum install cronie -y
+sudo systemctl start nginx
+sudo systemctl enable crond.service
+sudo systemctl start crond.service

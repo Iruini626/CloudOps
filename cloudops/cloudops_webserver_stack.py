@@ -20,11 +20,18 @@ class CloudopsWebserverStack(Stack):
         # Open port 80 for Webserver
         sg_webserver.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80))
         
+
         # Role for Webserver
         role_webserver = iam.Role(self, "Webserver Role",
                                    assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
                                    managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSSMManagedInstanceCore")])
         
+        # Allow Webserver to publish custom metrics to CloudWatch
+        role_webserver.add_to_policy(iam.PolicyStatement(
+            actions=["cloudwatch:PutMetricData"],
+            resources=["*"]
+        ))
+
         # Launch Webserver
         webserver = ec2.Instance(self, "Webserver",
                                  instance_type=ec2.InstanceType("t3.small"),
