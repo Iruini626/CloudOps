@@ -17,6 +17,9 @@ class CloudopsWebserverStack(Stack):
                                          allow_all_outbound=True,
                                          description="Webserver Security Group")
         
+        # Open port 80 for Webserver
+        sg_webserver.add_ingress_rule(ec2.Peer.any_ipv4(), ec2.Port.tcp(80))
+        
         # Role for Webserver
         role_webserver = iam.Role(self, "Webserver Role",
                                    assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
