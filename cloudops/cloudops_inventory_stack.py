@@ -1,5 +1,4 @@
 from aws_cdk import (
-    Tags,
     Stack,
     aws_ec2 as ec2,
     aws_autoscaling as auto_scale,
