@@ -1,6 +1,7 @@
 from aws_cdk import (
     aws_ec2 as ec2,
     aws_iam as iam,
+    aws_ssm as ssm,
     Stack,
     CfnOutput,
 )
@@ -42,6 +43,58 @@ class CloudopsWebserverStack(Stack):
                                  security_group=sg_webserver,
                                  instance_name="Nginx Webserver")
         
+
+        # Create a new SSM Document installing and enabling Nginx and Cronie
+        install_command = ssm.CfnDocument(self,"DefaulPackageDocuments",
+            document_type="Command",
+            content={
+                "schemaVersion": "2.2",
+                "description": "Install Nginx and Cronie",
+                "parameters": {},
+                "mainSteps": [
+                    {
+                        "action": "aws:runShellScript",
+                        "name": "runShellScript",
+                        "inputs": {
+                            "runCommand": [
+                                "sudo yum install -y nginx",
+                                "sudo yum install -y cronie",
+                                "sudo systemctl enable nginx",
+                                "sudo systemctl start nginx",
+                                "sudo systemctl enable crond.service",
+                                "sudo systemctl start crond.service"
+                            ]
+                        }
+                    }
+                ]
+            },
+            name="WebserverDefaultInstall"
+        )
+
+        # Creates an SSM command document that calculates active connections on port 80 and sends to cloudwatch as custom metric
+        custom_metric_command = ssm.CfnDocument(self,"CustomMetricCommand",
+            document_type="Command",
+            content={
+                "schemaVersion": "2.2",
+                "description": "Collect active connections on port 80",
+                "parameters": {},
+                "mainSteps": [
+                    {
+                        "action": "aws:runShellScript",
+                        "name": "runShellScript",
+                        "inputs": {
+                            "runCommand": [
+                                "connections=$(ss -antp | grep ':80' | wc -l)",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections"
+                            ]
+                        }
+                    }
+                ]
+            },
+            name="WebserverCustomMetric")
+
         CfnOutput(self, "Webserver IP", value=webserver.instance_public_ip)
         CfnOutput(self, "Webserver Security Group ID", value=sg_webserver.security_group_id)
         CfnOutput(self, "Webserver Role ARN", value=role_webserver.role_arn)
+        CfnOutput(self, "Install Command Document ARN", value=install_command.name)
+        CfnOutput(self, "Custom Metric Command Document ARN", value=custom_metric_command.name)
