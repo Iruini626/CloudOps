@@ -26,5 +26,6 @@ cdk.Tags.of(network_stack).add('resource_group','network_layer')
 cdk.Tags.of(inventory_stack).add('resource_group', 'inventory_layer')
 cdk.Tags.of(peering_stack).add('resource_group', 'peering_layer')
 cdk.Tags.of(webserver_stack).add('resource_group', 'webserver_layer')
+cdk.Tags.of(faulty_policy_stack).add('resource_group', 'faulty_policy_layer')
 
 app.synth()
