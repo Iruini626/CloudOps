@@ -7,12 +7,14 @@ from cloudops.cloudops_network_stack import CloudopsNetworkStack
 from cloudops.cloudops_inventory_stack import CloudopsInventoryStack
 from cloudops.cloudops_peering_stack import CloudopsPeeringStack
 from cloudops.cloudops_webserver_stack import CloudopsWebserverStack
+from cloudops.cloudops_faulty_policy_stack import CloudopsFaultyPolicyStack
 
 app = cdk.App()
 network_stack = CloudopsNetworkStack(app, "CloudOpsNetworkStack", env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 inventory_stack = CloudopsInventoryStack(app, "CloudOpsInventoryStack", vpc=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 peering_stack = CloudopsPeeringStack(app, "CloudOpsPeeringStack", vpc_main=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 webserver_stack = CloudopsWebserverStack(app, "CloudOpsWebserverStack", vpc_main=network_stack.vpc, env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
+faulty_policy_stack = CloudopsFaultyPolicyStack(app, "CloudOpsFaultyPolicyStack", env=cdk.Environment(account=os.getenv('CDK_DEFAULT_ACCOUNT'), region=os.getenv('CDK_DEFAULT_REGION')))
 
 cdk.Tags.of(app).add('environment','prod')
 cdk.Tags.of(app).add('application','cloudops')
