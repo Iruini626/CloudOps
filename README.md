@@ -1,7 +1,38 @@
+# CloudOps CDK Templates for Demos and Walkthroughs
 
-# Welcome to your CDK Python project!
+This repo contains all the necessary stacks to demonstrate certain concepts in CloudOps class.
 
-This is a blank project for CDK development with Python.
+This repo contains a few stacks:
+- CloudOpsNetworkStack
+- CloudOpsInventoryStack
+- CloudOpsPeeringStack
+- CloudOpsFaultyPolicyStack
+- CloudOpsEndpointsStack
+- CloudOpsWebserverStack
+
+The Network stack is the main stack to deploy. It is the network layer that all other stacks might depend on. 
+You can deploy resources into this stack during the demonstration as well.
+
+For the best effect, It is recommended to deploy all the stacks 1 week before class to get nice data and visualisations in CloudWatch
+
+CloudOpsInventoryStack - To demonstrate Systems Manager, AWS Config Rules, Resource Grouping and Tagging. 
+    This stack creates 2 autoscaling groups. 1 Group contains encrypted EBS, another without encryption
+
+CloudOpsPeeringStack - To demonstrate Peering between 2 VPC
+    This stack creates 1 additional VPC with 1 EC2 inside. You will need to create the peering connection and set the Route Tables during the demonstration
+
+CloudOpsFaultyPolicyStack - To demonstrate the effect of Policies and intended action (Troubleshooting for Access chapter)
+    This stack creates a SysOpsAdmin role with a particular policy to attach a specific EC2 role of specific name to an EC2 instance. Modify the policy to allow any named roles to be passed.
+
+CloudOpsEndpointsStack - To demonstrate VPC Endpoints
+    This creates ssm, ssmmessages, ec2messages endpoints on the main VPC to faciliate Session Manager when the NAT Gateway is removed form the RT.
+
+CloudOpsWebserverStack - To demonstrate CloudWatch and SSM Automation Documents
+    This creates an EC2 and a few  SSM Documents. Run the command document on the EC2 to boostrap Nginx.
+    SSH into the ec2 and create a cron job to run the provided sh script every second to demonstrate custom cloudwatch metrics.
+
+---
+
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
@@ -55,4 +86,4 @@ command.
  * `cdk diff`        compare deployed stack with current state
  * `cdk docs`        open CDK documentation
 
-Enjoy!
+
