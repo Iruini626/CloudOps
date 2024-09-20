@@ -24,7 +24,7 @@ cdk.Tags.of(app).add('application','cloudops')
 cdk.Tags.of(app).add('owner', 'arielyip')
 cdk.Tags.of(app).add('deployment_version','1.3')
 # Comment out the folllowing line to disable registration of myApplications, myApplications resource needs to be created first
-cdk.Tags.of(app).add("awsApplication", "arn:aws:resource-groups:ap-southeast-1:024444663664:group/cloudops/05cyy2riymuymc7ei8iqk94dt9")
+#cdk.Tags.of(app).add("awsApplication", "arn:aws:resource-groups:ap-southeast-1:024444663664:group/cloudops/05cyy2riymuymc7ei8iqk94dt9")
 
 # This adds particular tag for resources based on their stack
 cdk.Tags.of(network_stack).add('resource_group','network_layer')

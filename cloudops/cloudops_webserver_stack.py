@@ -1,7 +1,10 @@
 from aws_cdk import (
+    Duration,
     aws_ec2 as ec2,
     aws_iam as iam,
     aws_ssm as ssm,
+    # aws_events as eventbridge,
+    # aws_events_targets as targets,
     Stack,
     CfnOutput,
 )
@@ -26,6 +29,15 @@ class CloudopsWebserverStack(Stack):
         role_webserver = iam.Role(self, "Webserver Role",
                                    assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
                                    managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSSMManagedInstanceCore")])
+        
+        # Role for Eventbridge
+        role_scheduler = iam.Role(self, "Scheduler Role",
+                                     assumed_by=iam.ServicePrincipal("scheduler.amazonaws.com"))
+        
+        role_scheduler.add_to_policy(iam.PolicyStatement(
+            actions=["ssm:SendCommand"],
+            resources=["*"]
+        ))
         
         # Allow Webserver to publish custom metrics to CloudWatch
         role_webserver.add_to_policy(iam.PolicyStatement(
@@ -85,13 +97,60 @@ class CloudopsWebserverStack(Stack):
                         "inputs": {
                             "runCommand": [
                                 "connections=$(ss -antp | grep ':80' | wc -l)",
-                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections"
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
+                                "sleep 5",
+                                "aws cloudwatch put-metric-data --metric-name ActiveConnectionsPort80 --namespace WebserverMetrics --value $connections",
                             ]
                         }
                     }
                 ]
             },
             name="WebserverCustomMetric")
+        
+        # # Scheduler Target
+        # scheduler_target = targets.AwsApi(
+        #     action="SendCommand",
+        #     service="ssm",
+        #     inputs={
+        #         "DocumentName": custom_metric_command.name,
+        #         "InstanceIds": [webserver.instance_id]
+        #     }
+        # )
+
+        # Scheduler to run custom_metric_command every minute
+        #scheduler = eventbridge.Rule(self,"MetricSchedule",
+        #                             schedule=eventbridge.Schedule.rate(Duration.minutes(1)))
+
+        #scheduler.add_target(scheduler_target)
+
+
+
+        # eventbridge.CfnRule(self, "CustomMetricScheduler",
+        #     schedule_expression="rate(1 minute)",
+        #     targets=[eventbridge.CfnRule.TargetProperty(
+        #         arn=custom_metric_command.attr_arn,
+        #         id="WebserverCustomMetric",
+        #         role_arn=role_scheduler.role_arn
+        #     )])
+
+        # # Outputs
+        # CfnOutput(self, "Webserver ID", value=webserver.instance_id)
 
         CfnOutput(self, "Webserver IP", value=webserver.instance_public_ip)
         CfnOutput(self, "Webserver Security Group ID", value=sg_webserver.security_group_id)

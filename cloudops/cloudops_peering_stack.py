@@ -14,7 +14,7 @@ class CloudopsPeeringStack(Stack):
         super().__init__(scope, construct_id, **kwargs)
 
         # Create VPC
-        self.vpc = ec2.Vpc(self, "Accepting VPC",
+        acceptor_vpc = self.vpc = ec2.Vpc(self, "Accepting VPC",
             max_azs=1,
             subnet_configuration=[
                 ec2.SubnetConfiguration(
@@ -46,7 +46,7 @@ class CloudopsPeeringStack(Stack):
         self.peering_b = ec2.Instance(self, "Peering Instance B",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinux2023ImageSsmParameter(),
-            vpc=self.vpc,
+            vpc=acceptor_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
             role=role)
         

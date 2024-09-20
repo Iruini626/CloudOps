@@ -43,8 +43,8 @@ class CloudOpsEndpointStack(Stack):
         
         # Create an EC2 to execute CLI Commands
         command_host = ec2.Instance(self, "CommandHost",
-                                    instance_type=ec2.InstanceType("t4g.nano"),
-                                    machine_image=ec2.MachineImage.latest_amazon_linux2023(),
+                                    instance_type=ec2.InstanceType("t3.small"),
+                                    machine_image=ec2.AmazonLinux2023ImageSsmParameter(),
                                     security_group = endpoint_security_group,
                                     vpc=vpc_main,
                                     vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PRIVATE_WITH_EGRESS)
