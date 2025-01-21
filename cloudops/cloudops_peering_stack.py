@@ -34,8 +34,20 @@ class CloudopsPeeringStack(Stack):
                         assumed_by=iam.ServicePrincipal("ec2.amazonaws.com"),
                         managed_policies=[iam.ManagedPolicy.from_aws_managed_policy_name("AmazonSSMManagedInstanceCore")])
         
+        # Create a security group that allows icmp
+        self.sg = ec2.SecurityGroup(self, "SecurityGroup",
+            vpc=acceptor_vpc,
+            allow_all_outbound=True,
+            description="Allow ICMP traffic")
+        
+        self.sg.add_ingress_rule(
+            ec2.Peer.ipv4('10.25.0.0/20'),
+            ec2.Port.icmp_ping(),
+            "Allow ICMP ping from Accepting VPC",
+        )
+        
         # Create EC2 in the main VPC Public Subnet
-        self.peering_a = ec2.Instance(self, "Peering Instance A",
+        self.peering_a = ec2.Instance(self, "Peering Ping From",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinux2023ImageSsmParameter(),
             vpc=vpc_main,
@@ -43,12 +55,13 @@ class CloudopsPeeringStack(Stack):
             role=role)
         
         # Create EC2 in Accepting VPC Public Subnet
-        self.peering_b = ec2.Instance(self, "Peering Instance B",
+        self.peering_b = ec2.Instance(self, "Peering Ping To",
             instance_type=ec2.InstanceType("t2.micro"),
             machine_image=ec2.AmazonLinux2023ImageSsmParameter(),
             vpc=acceptor_vpc,
             vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
-            role=role)
+            role=role,
+            security_group=self.sg)
         
         CfnOutput(self,"accepting_vpc_id",value=self.vpc.vpc_id)
         CfnOutput(self,"base_vpc_id", value=vpc_main.vpc_id)

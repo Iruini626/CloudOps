@@ -3,12 +3,12 @@ from aws_cdk import (
     aws_ec2 as ec2,
     aws_iam as iam,
     aws_ssm as ssm,
-    # aws_events as eventbridge,
-    # aws_events_targets as targets,
+    aws_scheduler as scheduler,
     Stack,
     CfnOutput,
 )
 from constructs import Construct
+import json
 
 class CloudopsWebserverStack(Stack):
 
@@ -123,34 +123,23 @@ class CloudopsWebserverStack(Stack):
             },
             name="WebserverCustomMetric")
         
-        # # Scheduler Target
-        # scheduler_target = targets.AwsApi(
-        #     action="SendCommand",
-        #     service="ssm",
-        #     inputs={
-        #         "DocumentName": custom_metric_command.name,
-        #         "InstanceIds": [webserver.instance_id]
-        #     }
-        # )
-
-        # Scheduler to run custom_metric_command every minute
-        #scheduler = eventbridge.Rule(self,"MetricSchedule",
-        #                             schedule=eventbridge.Schedule.rate(Duration.minutes(1)))
-
-        #scheduler.add_target(scheduler_target)
-
-
-
-        # eventbridge.CfnRule(self, "CustomMetricScheduler",
-        #     schedule_expression="rate(1 minute)",
-        #     targets=[eventbridge.CfnRule.TargetProperty(
-        #         arn=custom_metric_command.attr_arn,
-        #         id="WebserverCustomMetric",
-        #         role_arn=role_scheduler.role_arn
-        #     )])
-
-        # # Outputs
-        # CfnOutput(self, "Webserver ID", value=webserver.instance_id)
+        scheduled_task = scheduler.CfnSchedule(self, "CustomMetricSchedule",
+                                                group_name='default',
+                                                schedule_expression='rate(1 minutes)',
+                                                target = {
+                                                    'arn': 'arn:aws:scheduler:::aws-sdk:ssm:sendCommand',
+                                                    'input':json.dumps({
+                                                        "DocumentName":"WebserverCustomMetric",
+                                                        "InstanceIds":[webserver.instance_id],
+                                                    }),
+                                                    'roleArn':role_scheduler.role_arn
+                                                },
+                                                state = 'ENABLED',
+                                                flexible_time_window = {
+                                                    'mode': 'OFF',
+                                                },
+                                                schedule_expression_timezone = 'Asia/Kuala_Lumpur',
+                                                name = 'put-metric')
 
         CfnOutput(self, "Webserver IP", value=webserver.instance_public_ip)
         CfnOutput(self, "Webserver Security Group ID", value=sg_webserver.security_group_id)
